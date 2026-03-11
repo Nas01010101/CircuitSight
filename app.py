@@ -137,25 +137,17 @@ def load_domain_config(domain: str = "pcb") -> Optional[dict]:
 
 
 def get_latest_train_dir() -> Path:
-    # Recursively find the newest training run that contains a results.csv
-    base = Path("runs")
-    if not base.exists():
-        return None
-    
-    # Only consider directories that have a results.csv
-    valid_runs = [p.parent for p in base.rglob("results.csv")]
-    if not valid_runs:
-        return None
-        
-    return sorted(valid_runs, key=lambda p: p.stat().st_mtime, reverse=True)[0]
+    base = Path("dashboard_assets/base_metrics")
+    if base.exists():
+        return base
+    return None
 
 
 def get_latest_val_dir() -> Path:
-    base = Path("runs/detect/runs/val")
-    if not base.exists():
-        return None
-    runs = sorted([d for d in base.iterdir() if d.is_dir() and d.name.startswith("pcb_mixed")], key=lambda p: p.stat().st_mtime, reverse=True)
-    return runs[0] if runs else None
+    base = Path("dashboard_assets/finetune_metrics")
+    if base.exists():
+        return base
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -214,7 +206,7 @@ def tab_system_overview():
         st.markdown('<div class="sec">Defect Typology</div>', unsafe_allow_html=True)
         st.markdown("The model robustly isolates 6 sub-millimeter defect classes:")
 
-        defect_img_dir = Path("data/processed/pcb_yolo/val/images")
+        defect_img_dir = Path("dashboard_assets/defect_samples")
         
         # Missing Hole & Mouse Bite
         st.markdown("**1. Missing Hole:** A drill via/hole that failed to penetrate or was skipped.")
@@ -277,7 +269,7 @@ def tab_training_performance():
     train_dir = get_latest_train_dir()
     
     if not train_dir:
-        st.error("No training data found in `runs/detect/runs/train/`. Please train the model first.")
+        st.error("No training data found in `dashboard_assets/base_metrics/`. Please check if files were copied correctly.")
         return
 
     st.markdown('<div class="sec">Primary Training Results (PKU-Market-PCB)</div>', unsafe_allow_html=True)
