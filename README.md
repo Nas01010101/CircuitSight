@@ -1,24 +1,23 @@
 # CircuitSight
 
-A professional, production-ready computer vision system for automated defect detection in manufacturing environments, focusing primarily on **Printed Circuit Boards (PCBs)**.
+A computer vision system for automated defect detection in Printed Circuit Board (PCB) manufacturing.
 
 ## Overview
 
-CircuitSight is designed to replace or augment manual visual inspection on assembly lines. It uses object detection (YOLOv8) combined with domain-specific feature engineering to identify sub-millimeter defects in real-time.
+CircuitSight detects visual defects on PCBs. It utilizes a YOLOv8 object detection model combined with image preprocessing techniques to identify specific defect types.
 
-**Core Capabilities:**
-*   **Multi-class Detection**: Specifically trained to detect 6 common PCB defects: `missing_hole`, `mouse_bite`, `open_circuit`, `short`, `spur`, and `spurious_copper`.
-*   **High Precision**: Tuned for automated Quality Control (QC) workflows where false positives must be minimized.
-*   **Production Deployment**: Features a FastAPI REST API for integration with manufacturing execution systems (MES), and a directory watcher for continuous camera feeds.
-*   **Extensible Architecture**: Uses a plugin-based configuration system to easily add new inspection domains (e.g., metal surfaces, textiles) without altering application code.
+**Technical Specifications:**
+*   **Target Classes**: The model is trained to identify 6 PCB defect categories: `missing_hole`, `mouse_bite`, `open_circuit`, `short`, `spur`, and `spurious_copper`.
+*   **Deployment Architecture**: Includes a FastAPI REST API for integration with manufacturing execution systems and a directory polling script for continuous image processing.
+*   **Domain Configuration**: Uses a YAML-based configuration system to specify inspection parameters and class dictionaries.
 
 ## Architecture
 
-*   **Model**: YOLOv8s (Small) trained on the PKU-Market-PCB dataset.
-*   **Feature Engineering**: Custom preprocessing pipeline including CLAHE (Contrast Limited Adaptive Histogram Equalization) and green-channel emphasis tailored for PCBs.
-*   **Web Dashboard**: A clean, professional Streamlit interface for manual inspection, batch reporting, and metric visualization.
-*   **REST API**: FastAPI implementation providing high-throughput inference endpoints.
-*   **Optimization**: Built-in ONNX export with benchmarking for CPU/Edge deployment speedups.
+*   **Model Architecture**: YOLOv8s (Small parameter variant).
+*   **Preprocessing**: Implements Contrast Limited Adaptive Histogram Equalization (CLAHE) and green-channel weighting.
+*   **User Interface**: A Streamlit dashboard for data visualization and inference testing.
+*   **API**: FastAPI server providing HTTP POST endpoints for inference.
+*   **Export**: Supports ONNX runtime export for CPU inference.
 
 ## Quick Start (Docker)
 
@@ -71,7 +70,7 @@ curl -X POST -F "file=@data/demo_images/missing_hole_sample.jpg" http://localhos
 ```
 
 ### Folder Watcher
-The watcher simulates a camera feed. Drop images into `data/inbox/`; the system automatically detects them, processes the inference, and outputs JSON reports and annotated images to `reports/auto/`.
+A script monitors the `data/inbox/` directory for new image files. Upon detection, it processes the image through the inference pipeline and writes JSON reports and annotated output images to `reports/auto/`.
 
 ## Extensibility (New Domains)
 
