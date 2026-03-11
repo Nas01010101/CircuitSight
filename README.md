@@ -4,7 +4,7 @@ A professional, production-ready computer vision system for automated defect det
 
 ## Overview
 
-CircuitSight is designed to replace or augment manual visual inspection on assembly lines. It uses state-of-the-art object detection (YOLOv8) combined with domain-specific feature engineering to identify sub-millimeter defects in real-time.
+CircuitSight is designed to replace or augment manual visual inspection on assembly lines. It uses object detection (YOLOv8) combined with domain-specific feature engineering to identify sub-millimeter defects in real-time.
 
 **Core Capabilities:**
 *   **Multi-class Detection**: Specifically trained to detect 6 common PCB defects: `missing_hole`, `mouse_bite`, `open_circuit`, `short`, `spur`, and `spurious_copper`.

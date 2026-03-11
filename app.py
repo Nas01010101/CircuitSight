@@ -212,21 +212,36 @@ def tab_system_overview():
 
     with col1:
         st.markdown('<div class="sec">Defect Typology</div>', unsafe_allow_html=True)
-        st.markdown("""
-        The model robustly isolates 6 sub-millimeter defect classes:
+        st.markdown("The model robustly isolates 6 sub-millimeter defect classes:")
 
-        **1. Missing Hole:** A mechanically or laser-drilled via/hole that failed to penetrate the board or was skipped entirely, breaking through-hole component connectivity.
+        defect_img_dir = Path("data/processed/pcb_yolo/val/images")
         
-        **2. Mouse Bite:** A ragged edge or divot taken out of a copper trace or pad (resembling a bite), which reduces the current-carrying capacity and creates a localized hot spot.
-        
-        **3. Open Circuit:** A complete, clean break in a copper trace. Current cannot flow across the gap, causing complete electrical failure in that subcircuit.
-        
-        **4. Short Circuit:** An unintended bridge of copper connecting two separate traces or pads that should be electrically isolated, potentially causing catastrophic power failure.
-        
-        **5. Spur:** An unwanted, sharp protrusion of copper jutting out from a legitimate trace. It violates minimum clearance rules and can act as an antenna, causing electromagnetic interference (EMI).
-        
-        **6. Spurious Copper:** Isolated, freestanding islands of unwanted copper left on the substrate after the etching process. These can flake off during assembly or cause shorts if shifted.
-        """)
+        # Missing Hole & Mouse Bite
+        st.markdown("**1. Missing Hole:** A drill via/hole that failed to penetrate or was skipped.")
+        if (defect_img_dir / "12_missing_hole_05.jpg").exists():
+            st.image(str(defect_img_dir / "12_missing_hole_05.jpg"), width=150)
+            
+        st.markdown("**2. Mouse Bite:** A ragged divot taken out of a copper trace reducing current-carrying capacity.")
+        if (defect_img_dir / "10_mouse_bite_01.jpg").exists():
+            st.image(str(defect_img_dir / "10_mouse_bite_01.jpg"), width=150)
+            
+        # Open & Short
+        st.markdown("**3. Open Circuit:** A complete break in a copper trace causing electrical failure.")
+        if (defect_img_dir / "01_open_circuit_01.jpg").exists():
+            st.image(str(defect_img_dir / "01_open_circuit_01.jpg"), width=150)
+            
+        st.markdown("**4. Short Circuit:** An unintended bridge of copper connecting two separate traces.")
+        if (defect_img_dir / "01_short_01.jpg").exists():
+            st.image(str(defect_img_dir / "01_short_01.jpg"), width=150)
+            
+        # Spur & Spurious
+        st.markdown("**5. Spur:** An unwanted sharp protrusion of copper jutting from a legitimate trace.")
+        if (defect_img_dir / "04_spur_19.jpg").exists():
+            st.image(str(defect_img_dir / "04_spur_19.jpg"), width=150)
+            
+        st.markdown("**6. Spurious Copper:** Isolated islands of unwanted copper left after etching.")
+        if (defect_img_dir / "04_spurious_copper_14.jpg").exists():
+            st.image(str(defect_img_dir / "04_spurious_copper_14.jpg"), width=150)
 
     with col2:
         st.markdown('<div class="sec">Processing Pipeline</div>', unsafe_allow_html=True)
