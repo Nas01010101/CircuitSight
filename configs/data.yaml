@@ -1,0 +1,13 @@
+path: /Users/wissem/Projects/AIT Visual inspector/data/processed/pcb_yolo
+train: train/images
+val: val/images
+test: test/images
+nc: 6
+names:
+  0: missing_hole
+  1: mouse_bite
+  2: open_circuit
+  3: short
+  4: spur
+  5: spurious_copper
+domain: pcb

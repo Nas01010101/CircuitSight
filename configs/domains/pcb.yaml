@@ -1,0 +1,54 @@
+# PCB Defect Detection Domain Configuration
+# Dataset: PKU-Market-PCB (Kaggle)
+# Source: https://www.kaggle.com/datasets/akhatova/pcb-defects
+
+domain:
+  name: pcb
+  display_name: "PCB Defect Detection"
+  description: "Detect 6 types of defects on printed circuit boards"
+  active: true
+
+# Classes
+nc: 6
+names:
+  0: missing_hole
+  1: mouse_bite
+  2: open_circuit
+  3: short_circuit
+  4: spur
+  5: spurious_copper
+
+# Class descriptions (shown on website)
+class_info:
+  missing_hole: "A hole that should be present on the PCB is absent"
+  mouse_bite: "Irregular rough edges along the PCB border or drill holes"
+  open_circuit: "A broken or disconnected copper trace"
+  short_circuit: "Unintended copper connection between traces"
+  spur: "Unwanted copper protrusion from a trace"
+  spurious_copper: "Excess copper residue in unintended areas"
+
+# Class colors for visualization (BGR)
+class_colors:
+  missing_hole: [255, 0, 0]       # Blue
+  mouse_bite: [0, 0, 255]         # Red
+  open_circuit: [0, 165, 255]     # Orange
+  short_circuit: [0, 255, 255]    # Yellow
+  spur: [255, 0, 255]             # Magenta
+  spurious_copper: [0, 255, 0]    # Green
+
+# Data paths
+data:
+  raw_dir: data/raw/pcb
+  processed_dir: data/processed/pcb_yolo
+  kaggle_dataset: "akhatova/pcb-defects"
+
+# Preprocessing
+preprocessing:
+  clahe: true
+  clahe_clip_limit: 2.0
+  clahe_grid_size: [8, 8]
+
+# Weights
+weights:
+  best: runs/pcb/weights/best.pt
+  onnx: runs/pcb/weights/best.onnx

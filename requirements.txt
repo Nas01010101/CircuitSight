@@ -1,0 +1,32 @@
+# Core
+ultralytics>=8.0.0
+torch>=2.0.0
+opencv-python-headless>=4.8.0
+numpy>=1.24.0
+pyyaml>=6.0
+tqdm>=4.65.0
+requests>=2.31.0
+
+# Web Application
+streamlit>=1.28.0
+pandas>=2.0.0
+
+# REST API
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+python-multipart>=0.0.6
+
+# Reporting
+fpdf2>=2.7.0
+
+# Tracking (video bonus feature)
+supervision>=0.14.0
+
+# Data download
+kaggle>=1.5.0
+
+# Folder watcher
+watchdog>=3.0.0
+
+# ONNX export
+onnxruntime>=1.15.0

@@ -1,0 +1,45 @@
+# AIT Visual Inspector — Common .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ML artifacts
+runs/
+*.pt
+*.onnx
+*.torchscript
+
+# Data (large files — download via make download-data)
+data/raw/
+data/processed/
+data/inbox/
+
+# Reports (generated)
+reports/
+logs/
+
+# Credentials
+.kaggle/
+.env
+
+# OS
+.DS_Store
+Thumbs.db

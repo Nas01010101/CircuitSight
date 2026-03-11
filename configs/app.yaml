@@ -1,0 +1,36 @@
+# ──────────────────────────────────────────────
+# AIT Visual Inspector — Application Configuration
+# ──────────────────────────────────────────────
+
+# QC Verdicts
+qc:
+  pass_threshold: 0.5        # Confidence above this → defect confirmed
+  max_defects_pass: 0        # Max allowed defects for PASS verdict (0 = zero tolerance)
+  review_threshold: 0.3      # Confidence in [review, pass] → "NEEDS REVIEW"
+
+# Streamlit App
+app:
+  title: "AIT Visual Inspector"
+  page_icon: ""
+  layout: wide
+  theme: dark
+
+# Video Tracking
+tracking:
+  tracker: bytetrack         # Options: bytetrack, botsort
+  track_thresh: 0.25         # Detection confidence threshold for tracking
+  track_buffer: 30           # Frames to keep lost tracks
+  match_thresh: 0.8          # IoU threshold for matching
+  alert_dwell_seconds: 5     # Alert if object stays > N seconds in restricted zone
+
+# Reporting
+reporting:
+  output_dir: reports
+  include_thumbnail: true
+  thumbnail_size: [320, 320]
+  pdf_page_size: A4
+
+# Logging
+logging:
+  level: INFO
+  log_dir: logs

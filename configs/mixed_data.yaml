@@ -1,0 +1,20 @@
+# YOLOv8 Mixed Dataset Configuration
+# Merges the primary PKU-Market-PCB dataset and the secondary norbertelter dataset
+path: /Users/wissem/Projects/AIT Visual inspector
+train: 
+  - data/processed/pcb_yolo/train/images
+  - data/raw/pcb2/pcb-defect-dataset/train/images
+val:
+  - data/processed/pcb_yolo/val/images
+  - data/raw/pcb2/pcb-defect-dataset/val/images
+test:
+  - data/processed/pcb_yolo/test/images
+  - data/raw/pcb2/pcb-defect-dataset/test/images
+
+names:
+  0: missing_hole
+  1: mouse_bite
+  2: open_circuit
+  3: short
+  4: spur
+  5: spurious_copper

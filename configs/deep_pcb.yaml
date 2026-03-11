@@ -1,0 +1,15 @@
+# DeepPCB Zero-Shot Evaluation Config
+path: /Users/wissem/Projects/AIT Visual inspector/data/processed/deep_pcb
+train: test/images  # Not used for training, but YOLO requires it
+val: test/images
+test: test/images
+
+# Classes
+nc: 6
+names:
+  0: missing_hole
+  1: mouse_bite
+  2: open_circuit
+  3: short_circuit
+  4: spur
+  5: spurious_copper

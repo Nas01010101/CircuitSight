@@ -1,0 +1,35 @@
+# Metal Surface Defect Detection Domain Configuration
+# Dataset: NEU Surface Defect Database
+# Source: https://www.kaggle.com/datasets/kaustubhdikshit/neu-surface-defect-database
+# Status: FUTURE — not yet trained
+
+domain:
+  name: metal_surface
+  display_name: "Metal Surface Defect Detection"
+  description: "Detect 6 types of surface defects on hot-rolled steel strips"
+  active: false
+
+nc: 6
+names:
+  0: crazing
+  1: inclusion
+  2: patches
+  3: pitted_surface
+  4: rolled_in_scale
+  5: scratches
+
+class_info:
+  crazing: "Fine network of surface cracks"
+  inclusion: "Non-metallic particles trapped in the steel surface"
+  patches: "Irregular discolored areas on the surface"
+  pitted_surface: "Small pits or cavities on the surface"
+  rolled_in_scale: "Oxide scale pressed into the surface during rolling"
+  scratches: "Linear marks from mechanical contact"
+
+data:
+  raw_dir: data/raw/neu
+  processed_dir: data/processed/neu_yolo
+  kaggle_dataset: "kaustubhdikshit/neu-surface-defect-database"
+
+weights:
+  best: runs/metal_surface/weights/best.pt

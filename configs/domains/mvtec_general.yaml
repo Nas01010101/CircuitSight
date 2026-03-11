@@ -1,0 +1,42 @@
+# MVTec Anomaly Detection Domain Configuration
+# Dataset: MVTec AD
+# Source: https://www.mvtec.com/company/research/datasets/mvtec-ad
+# Status: FUTURE — general-purpose anomaly detection
+
+domain:
+  name: mvtec_general
+  display_name: "General Anomaly Detection"
+  description: "Detect anomalies across 15 product categories (bottles, cables, metal nuts, etc.)"
+  active: false
+
+nc: 2
+names:
+  0: good
+  1: defect
+
+class_info:
+  good: "Normal product with no visible defects"
+  defect: "Any visible anomaly (scratch, dent, contamination, structural)"
+
+data:
+  raw_dir: data/raw/mvtec_ad
+  processed_dir: data/processed/mvtec_yolo
+  categories:
+    - bottle
+    - cable
+    - capsule
+    - carpet
+    - grid
+    - hazelnut
+    - leather
+    - metal_nut
+    - pill
+    - screw
+    - tile
+    - toothbrush
+    - transistor
+    - wood
+    - zipper
+
+weights:
+  best: runs/mvtec/weights/best.pt
