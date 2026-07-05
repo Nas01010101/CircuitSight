@@ -226,9 +226,10 @@ def convert_pcb_to_yolo(
 
         stats[split_name] = len(split_samples)
 
-    # Generate data.yaml with absolute path
+    # Keep the committed config portable: store the path exactly as given
+    # (train.py resolves it to absolute at runtime).
     data_yaml = {
-        "path": str(out_path.resolve()),
+        "path": str(out_path),
         "train": "train/images",
         "val": "val/images",
         "test": "test/images",

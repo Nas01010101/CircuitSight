@@ -43,3 +43,6 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+experiments/*/runs/
+experiments/*/.autoresearch/
+experiments/*/journal.jsonl
