@@ -1,4 +1,4 @@
-path: /Users/wissem/Projects/AIT Visual inspector/data/processed/pcb_yolo
+path: data/processed/pcb_yolo
 train: train/images
 val: val/images
 test: test/images

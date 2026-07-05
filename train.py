@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AIT Visual Inspector -- Training Script
+CircuitSight -- Training Script
 Trains YOLOv8 on the prepared dataset with reproducible configs.
 
 Usage:
@@ -25,7 +25,7 @@ def main():
     )
 
     parser = argparse.ArgumentParser(
-        description="Train YOLOv8 for AIT defect detection",
+        description="Train YOLOv8 for CircuitSight defect detection",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--config", type=str, default="configs/model.yaml", help="Model config YAML")
@@ -35,7 +35,7 @@ def main():
     parser.add_argument("--img", type=int, default=None, help="Override image size")
     parser.add_argument("--model", type=str, default=None, help="Override model size (e.g., yolov8s)")
     parser.add_argument("--resume", type=str, default=None, help="Resume from checkpoint")
-    parser.add_argument("--name", type=str, default="ait_inspector", help="Run name")
+    parser.add_argument("--name", type=str, default="circuitsight", help="Run name")
     parser.add_argument("--device", type=str, default=None, help="Device (cuda:0, cpu, mps)")
     args = parser.parse_args()
 
@@ -60,17 +60,21 @@ def main():
         logger.info("Run: make prepare-data")
         sys.exit(1)
 
-    # Ensure absolute path in data.yaml
+    # Ultralytics resolves a relative `path:` against its own datasets_dir, so
+    # hand it an absolute path via a runtime copy — never by mutating the
+    # committed config (that leaks machine-local paths into version control).
     with open(data_path) as f:
         data_cfg = yaml.safe_load(f)
 
-    dataset_root = data_cfg.get("path", "data/processed/mvtec_yolo")
+    dataset_root = data_cfg.get("path", "data/processed/pcb_yolo")
     if not Path(dataset_root).is_absolute():
         dataset_root = str(Path.cwd() / dataset_root)
         data_cfg["path"] = dataset_root
-        # Write back with absolute path
-        with open(data_path, "w") as f:
+        resolved = Path("runs") / "resolved_data.yaml"
+        resolved.parent.mkdir(parents=True, exist_ok=True)
+        with open(resolved, "w") as f:
             yaml.dump(data_cfg, f, default_flow_style=False, sort_keys=False)
+        data_path = resolved
 
     if not Path(dataset_root).exists():
         logger.error("Dataset not found at: %s", dataset_root)
@@ -79,7 +83,7 @@ def main():
 
     # -- Print training config --
     logger.info("=" * 50)
-    logger.info("AIT Visual Inspector -- Training")
+    logger.info("CircuitSight -- Training")
     logger.info("=" * 50)
     logger.info("  Model:       %s", model_size)
     logger.info("  Epochs:      %d", epochs)
