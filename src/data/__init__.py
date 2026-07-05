@@ -1,4 +1,4 @@
-# AIT Visual Inspector -- Data Utilities
+# CircuitSight -- Data Utilities
 __all__ = [
     "download_mvtec_ad",
     "download_file",

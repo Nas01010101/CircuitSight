@@ -1,5 +1,5 @@
 """
-AIT Visual Inspector — ONNX Model Export
+CircuitSight — ONNX Model Export
 Export YOLOv8 model to ONNX format with inference benchmarking.
 
 Usage:

@@ -1,1 +1,1 @@
-# AIT Visual Inspector — REST API
+# CircuitSight — REST API

@@ -1,1 +1,1 @@
-# AIT Visual Inspector — Folder Watcher
+# CircuitSight — Folder Watcher

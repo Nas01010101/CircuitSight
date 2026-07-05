@@ -1,4 +1,4 @@
-# Model Card — AIT Visual Inspector
+# Model Card — CircuitSight
 
 ## Model Overview
 
@@ -9,13 +9,13 @@
 | **Framework** | Ultralytics / PyTorch |
 | **Input** | RGB images (640×640) |
 | **Output** | Bounding boxes + confidence + defect class |
-| **Classes** | 6 (missing_hole, mouse_bite, open_circuit, short_circuit, spur, spurious_copper) |
+| **Classes** | 6 (missing_hole, mouse_bite, open_circuit, short, spur, spurious_copper) |
 
 ## Intended Use
 
 - **Primary**: Automated visual inspection of printed circuit boards (PCBs)
 - **Scope**: Detecting 6 types of manufacturing defects on bare PCB surfaces
-- **Users**: QC engineers, AIT technicians, automated inspection pipelines
+- **Users**: QC engineers, automated inspection pipelines
 - **Deployment**: Docker, REST API, systemd service, or embedded systems
 
 ## Training Data

@@ -1,13 +1,13 @@
 [Unit]
-Description=AIT Visual Inspector — Defect Detection Service
+Description=CircuitSight — PCB Defect Detection Service
 After=network.target
 
 [Service]
 Type=simple
-User=ait
-Group=ait
-WorkingDirectory=/opt/ait-inspector
-ExecStart=/opt/ait-inspector/venv/bin/uvicorn src.api.server:app --host 0.0.0.0 --port 8000
+User=circuitsight
+Group=circuitsight
+WorkingDirectory=/opt/circuitsight
+ExecStart=/opt/circuitsight/venv/bin/uvicorn src.api.server:app --host 0.0.0.0 --port 8000
 Restart=always
 RestartSec=5
 Environment=PYTHONUNBUFFERED=1

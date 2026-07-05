@@ -1,4 +1,4 @@
-# AIT Visual Inspector — Common .gitignore
+# CircuitSight — Common .gitignore
 
 # Python
 __pycache__/

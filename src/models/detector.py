@@ -4,6 +4,7 @@ Multi-class defect detection with domain-aware configuration.
 """
 
 import logging
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Union
@@ -19,7 +20,8 @@ DEFAULT_CLASS_COLORS = {
     "missing_hole": (255, 0, 0),       # Blue
     "mouse_bite": (0, 0, 255),         # Red
     "open_circuit": (0, 165, 255),     # Orange
-    "short_circuit": (0, 255, 255),    # Yellow
+    "short": (0, 255, 255),           # Yellow
+    "short_circuit": (0, 255, 255),    # Yellow (alias)
     "spur": (255, 0, 255),             # Magenta
     "spurious_copper": (0, 255, 0),    # Green
     "defect": (0, 0, 255),             # Red (fallback)
@@ -77,7 +79,7 @@ class InferenceResult:
 
 class CircuitSight_Detector:
     """
-    YOLOv8-based multi-class defect detector for AIT inspection.
+    YOLOv8-based multi-class defect detector for CircuitSight inspection.
 
     Supports domain-aware configuration via YAML configs.
 
@@ -109,7 +111,7 @@ class CircuitSight_Detector:
         self.max_defects_pass = max_defects_pass
         self.class_names = class_names or {
             0: "missing_hole", 1: "mouse_bite", 2: "open_circuit",
-            3: "short_circuit", 4: "spur", 5: "spurious_copper",
+            3: "short", 4: "spur", 5: "spurious_copper",
         }
         self.class_colors = class_colors or DEFAULT_CLASS_COLORS
         self.domain = domain
@@ -202,8 +204,6 @@ class CircuitSight_Detector:
         """
         if self.model is None:
             raise RuntimeError("Model not loaded. Call .load(weights_path) first.")
-
-        import time
 
         if isinstance(source, str):
             img = cv2.imread(source)

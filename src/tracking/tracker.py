@@ -1,5 +1,5 @@
 """
-AIT Visual Inspector -- Object Tracker
+CircuitSight -- Object Tracker
 ByteTrack-based multi-object tracking for FOD/tool detection in video.
 
 Integrates with the detector to maintain object IDs across frames
@@ -67,15 +67,15 @@ class TrackingEvent:
         }
 
 
-class AIT_Tracker:
+class CircuitSight_Tracker:
     """
-    ByteTrack-based tracker for AIT inspection video analysis.
+    ByteTrack-based tracker for CircuitSight inspection video analysis.
 
     Wraps supervision's ByteTrack for seamless integration with
-    AIT_Detector detections.
+    CircuitSight_Detector detections.
 
     Usage:
-        tracker = AIT_Tracker(alert_dwell_seconds=5)
+        tracker = CircuitSight_Tracker(alert_dwell_seconds=5)
         for frame in video:
             detections = detector.detect(frame)
             annotated, events = tracker.update(frame, detections, frame_idx, fps)
@@ -126,7 +126,7 @@ class AIT_Tracker:
 
         Args:
             frame: Current video frame (BGR)
-            detections: List of Detection objects from AIT_Detector
+            detections: List of Detection objects from CircuitSight_Detector
             frame_idx: Current frame index
             fps: Video FPS for dwell time calculation
 
