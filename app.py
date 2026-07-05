@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-AIT Visual Inspector — Analysis Dashboard
-Focuses purely on methodology, model performance metrics, and cross-dataset generalization.
-No interactive inference tools (drag & drop removed per user request).
+CircuitSight — Analysis Dashboard
+Methodology, model performance metrics, and cross-dataset generalization.
+Live inference is served by the REST API (make api); this dashboard is read-only.
 """
 
 import json
@@ -168,9 +168,9 @@ def render_sidebar():
             """, unsafe_allow_html=True
         )
 
-        st.markdown('<div class="subsec" style="margin-top: 1.5rem;">Deployment Status</div>', unsafe_allow_html=True)
-        st.markdown("🟢 **REST API**: Online (`:8000/inspect`)")
-        st.markdown("🟢 **Watcher**: Active (`data/inbox`)")
+        st.markdown('<div class="subsec" style="margin-top: 1.5rem;">Deployment Endpoints</div>', unsafe_allow_html=True)
+        st.markdown("**REST API**: `POST :8000/inspect` (`make api`)")
+        st.markdown("**Watcher**: `data/inbox/` (`make watch`)")
         
         st.markdown('<div class="subsec">Model Specifications</div>', unsafe_allow_html=True)
         st.markdown("""
@@ -183,7 +183,7 @@ def render_sidebar():
 
         st.markdown('<div class="subsec">ONNX Speedup (CPU)</div>', unsafe_allow_html=True)
         st.markdown(mrow([("PyTorch", "2 FPS"), ("ONNX", "5 FPS")]), unsafe_allow_html=True)
-        st.caption("2.16x throughput increase via ONNX export.")
+        st.caption("CPU throughput measured before/after ONNX export (make export-onnx re-runs the benchmark).")
 
 
 # ---------------------------------------------------------------------------
@@ -343,7 +343,7 @@ def tab_generalization():
         ("Mixed mAP@50-95", "0.584")
     ]), unsafe_allow_html=True)
     
-    st.caption("By forcing the network to learn both datasets simultaneously, the model successfully abstracted the mathematical geometry of the defects, surging from 51% accuracy to a massive 98.1% accuracy across diverse lighting and factory conditions.")
+    st.caption("Joint training on both datasets pushed out-of-distribution mAP@50 from 0.510 (zero-shot) to 0.981, indicating the model learned defect geometry that transfers across imaging conditions rather than dataset-specific appearance.")
 
     st.markdown("---")
     

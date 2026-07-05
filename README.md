@@ -15,7 +15,7 @@ CircuitSight detects visual defects on PCBs. It utilizes a YOLOv8 object detecti
 
 *   **Model Architecture**: YOLOv8s (Small parameter variant).
 *   **Preprocessing**: Implements Contrast Limited Adaptive Histogram Equalization (CLAHE) and green-channel weighting.
-*   **User Interface**: A Streamlit dashboard for data visualization and inference testing.
+*   **User Interface**: A read-only Streamlit dashboard covering methodology, training metrics, and cross-dataset generalization analysis.
 *   **API**: FastAPI server providing HTTP POST endpoints for inference.
 *   **Export**: Supports ONNX runtime export for CPU inference.
 
@@ -66,7 +66,7 @@ make deploy
 ### REST API Example
 Test the detection endpoint using curl:
 ```bash
-curl -X POST -F "file=@data/demo_images/missing_hole_sample.jpg" http://localhost:8000/inspect
+curl -X POST -F "file=@path/to/pcb_image.jpg" http://localhost:8000/inspect
 ```
 
 ### Folder Watcher
@@ -77,20 +77,32 @@ A script monitors the `data/inbox/` directory for new image files. Upon detectio
 To add a new inspection domain (e.g. `metal_surface`), simply create a new configuration file at `configs/domains/metal_surface.yaml`:
 
 ```yaml
-name: "Metal Surface Defect Detection"
-description: "Detects scratches, cracks, and inclusions on steel surfaces."
-classes:
-  0: "scratch"
-  1: "crack"
-  2: "inclusion"
+domain:
+  name: metal_surface
+  display_name: "Metal Surface Defect Detection"
+  description: "Detects scratches, cracks, and inclusions on steel surfaces."
+
+nc: 3
+names:
+  0: scratch
+  1: crack
+  2: inclusion
+
 class_colors:
   scratch: [0, 0, 255]
   crack: [255, 0, 0]
   inclusion: [0, 255, 0]
+
 preprocessing:
-  apply_clahe: true
+  clahe: true
 ```
-Then train by referencing the new data paths in `data.yaml`.
+Then point `configs/data.yaml` at the new dataset and train.
+
+## Testing
+
+```bash
+make test   # pytest over IoU matching, verdict logic, augmentation, VOC parsing, metrics
+```
 
 ## License & Acknowledgements
 Dataset: [PKU-Market-PCB](https://www.kaggle.com/datasets/akhatova/pcb-defects)
