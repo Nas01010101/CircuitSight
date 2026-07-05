@@ -11,9 +11,9 @@ Usage:
     # or: make api
 """
 
-import io
 import logging
 import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import cv2
@@ -22,14 +22,25 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
 from src.models.detector import CircuitSight_Detector
+from src.utils.weights import find_best_weights
 
 logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Pre-load the model on startup so the first request isn't slow."""
+    logger.info("CircuitSight API starting...")
+    _get_detector()
+    yield
+
 
 # ── App setup ────────────────────────────────
 app = FastAPI(
     title="CircuitSight API",
     description="PCB defect detection REST API",
     version="2.0.0",
+    lifespan=lifespan,
 )
 
 # ── Global state ─────────────────────────────
@@ -53,27 +64,12 @@ def _get_detector() -> CircuitSight_Detector:
         domain_config=domain_config if Path(domain_config).exists() else None,
     )
 
-    # Find best available weights
-    weight_candidates = [
-        "models/pcb_mixed_best.pt",
-        "runs/pcb/weights/best.pt",
-        "runs/train/weights/best.pt",
-        "runs/ait_inspector/weights/best.pt",
-    ]
-
-    # Also search runs/ recursively
-    runs_dir = Path("runs")
-    if runs_dir.exists():
-        for pt in sorted(runs_dir.rglob("best.pt"), key=lambda p: p.stat().st_mtime, reverse=True):
-            weight_candidates.insert(0, str(pt))
-
-    for wp in weight_candidates:
-        if Path(wp).exists():
-            _detector.load(wp)
-            logger.info("API loaded model: %s", wp)
-            return _detector
-
-    logger.warning("No model weights found — API will return errors on /inspect")
+    weights = find_best_weights()
+    if weights is not None:
+        _detector.load(weights)
+        logger.info("API loaded model: %s", weights)
+    else:
+        logger.warning("No model weights found — API will return errors on /inspect")
     return _detector
 
 
@@ -130,10 +126,3 @@ async def inspect(file: UploadFile = File(...)):
         "filename": file.filename,
         **result.to_dict(),
     })
-
-
-@app.on_event("startup")
-async def startup():
-    """Pre-load model on startup."""
-    logger.info("CircuitSight API starting...")
-    _get_detector()

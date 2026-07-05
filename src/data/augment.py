@@ -111,7 +111,7 @@ def _add_synthetic_scratch(
     y1 = random.randint(int(h * 0.1), int(h * 0.9))
 
     length = random.uniform(min_length, max_length) * min(h, w)
-    angle = random.uniform(0, 2 * 3.14159)
+    angle = random.uniform(0, 2 * np.pi)
 
     x2 = int(x1 + length * np.cos(angle))
     y2 = int(y1 + length * np.sin(angle))

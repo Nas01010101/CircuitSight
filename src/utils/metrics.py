@@ -111,6 +111,24 @@ def compute_detection_metrics(
     return metrics
 
 
+NON_DEFECT_NAMES = {"good", "normal", "ok", "background"}
+
+
+def resolve_defect_class_ids(class_names: Dict) -> set:
+    """
+    Return the set of class IDs that count as defects.
+
+    In binary datasets (good/defect) only the 'defect' class counts; in
+    defect-only datasets like PKU-Market-PCB every class is a defect type,
+    so an image is defective if it has ANY label — not just one class.
+    """
+    return {
+        int(cls_id)
+        for cls_id, name in class_names.items()
+        if str(name).lower() not in NON_DEFECT_NAMES
+    }
+
+
 def compute_iou(box1: np.ndarray, box2: np.ndarray) -> float:
     """Compute IoU between two boxes in xyxy format."""
     x1 = max(box1[0], box2[0])

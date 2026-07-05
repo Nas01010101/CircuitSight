@@ -1,5 +1,5 @@
 """
-Unit tests for AIT Visual Inspector core modules.
+Unit tests for CircuitSight core modules.
 Run: python -m pytest tests/ -v
 """
 
@@ -383,3 +383,59 @@ class TestComputeDetectionMetrics:
         from src.utils.metrics import compute_detection_metrics
         metrics = compute_detection_metrics([], [], iou_threshold=0.5, n_classes=2)
         assert metrics["overall"]["precision"] == 0.0
+
+
+# ---------------------------------------------------------------------------
+# Weight discovery
+# ---------------------------------------------------------------------------
+class TestFindBestWeights:
+    """Tests for find_best_weights priority order."""
+
+    def test_no_weights(self, tmp_path):
+        from src.utils.weights import find_best_weights
+        assert find_best_weights(str(tmp_path)) is None
+
+    def test_curated_wins_over_runs(self, tmp_path):
+        from src.utils.weights import find_best_weights
+        curated = tmp_path / "models" / "pcb_mixed_best.pt"
+        curated.parent.mkdir()
+        curated.write_bytes(b"curated")
+        run = tmp_path / "runs" / "train" / "weights" / "best.pt"
+        run.parent.mkdir(parents=True)
+        run.write_bytes(b"run")
+        assert find_best_weights(str(tmp_path)) == str(curated)
+
+    def test_newest_run_wins(self, tmp_path):
+        import os
+        from src.utils.weights import find_best_weights
+        old = tmp_path / "runs" / "old" / "weights" / "best.pt"
+        new = tmp_path / "runs" / "new" / "weights" / "best.pt"
+        for p in (old, new):
+            p.parent.mkdir(parents=True)
+            p.write_bytes(b"w")
+        os.utime(old, (1000, 1000))
+        os.utime(new, (2000, 2000))
+        assert find_best_weights(str(tmp_path)) == str(new)
+
+
+# ---------------------------------------------------------------------------
+# Defect class resolution
+# ---------------------------------------------------------------------------
+class TestResolveDefectClassIds:
+    """Tests for resolve_defect_class_ids."""
+
+    def test_binary_dataset(self):
+        from src.utils.metrics import resolve_defect_class_ids
+        assert resolve_defect_class_ids({0: "good", 1: "defect"}) == {1}
+
+    def test_defect_only_dataset_all_count(self):
+        from src.utils.metrics import resolve_defect_class_ids
+        names = {
+            0: "missing_hole", 1: "mouse_bite", 2: "open_circuit",
+            3: "short", 4: "spur", 5: "spurious_copper",
+        }
+        assert resolve_defect_class_ids(names) == {0, 1, 2, 3, 4, 5}
+
+    def test_case_insensitive_non_defect(self):
+        from src.utils.metrics import resolve_defect_class_ids
+        assert resolve_defect_class_ids({0: "Good", 1: "scratch"}) == {1}

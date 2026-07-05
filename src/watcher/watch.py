@@ -1,5 +1,5 @@
 """
-AIT Visual Inspector — Folder Watcher
+CircuitSight — Folder Watcher
 Monitors an inbox folder for new images and auto-runs inspection.
 
 Simulates a factory camera feed integration:
@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tiff"}
 POLL_INTERVAL = 2.0  # seconds
+SETTLE_SECONDS = 1.0  # skip files still being written (camera/network copy in progress)
 
 
 def watch_folder(
@@ -40,6 +41,7 @@ def watch_folder(
     Uses polling instead of watchdog for simplicity and cross-platform support.
     """
     from src.models.detector import CircuitSight_Detector
+    from src.utils.weights import find_best_weights
 
     inbox = Path(inbox_dir)
     output = Path(output_dir)
@@ -52,18 +54,11 @@ def watch_folder(
         domain_config=domain_config if Path(domain_config).exists() else None,
     )
 
-    # Find weights
-    runs_dir = Path("runs")
-    loaded = False
-    if runs_dir.exists():
-        for pt in sorted(runs_dir.rglob("best.pt"), key=lambda p: p.stat().st_mtime, reverse=True):
-            detector.load(str(pt))
-            loaded = True
-            break
-
-    if not loaded:
+    weights = find_best_weights()
+    if weights is None:
         logger.error("No model weights found. Train first: make train-pcb")
         return
+    detector.load(weights)
 
     # Track processed files
     processed = set()
@@ -74,7 +69,7 @@ def watch_folder(
             processed.add(f.name)
 
     logger.info("=" * 50)
-    logger.info("AIT Folder Watcher started")
+    logger.info("CircuitSight folder watcher started")
     logger.info("  Inbox:  %s", inbox.resolve())
     logger.info("  Output: %s", output.resolve())
     logger.info("  Watching for: %s", ", ".join(IMAGE_EXTENSIONS))
@@ -87,6 +82,8 @@ def watch_folder(
                     continue
                 if f.name in processed:
                     continue
+                if time.time() - f.stat().st_mtime < SETTLE_SECONDS:
+                    continue  # still being written; pick it up next poll
 
                 logger.info("New image detected: %s", f.name)
                 processed.add(f.name)
@@ -130,7 +127,7 @@ def main():
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
 
-    parser = argparse.ArgumentParser(description="AIT Folder Watcher")
+    parser = argparse.ArgumentParser(description="CircuitSight folder watcher")
     parser.add_argument("--inbox", default="data/inbox", help="Folder to watch")
     parser.add_argument("--output", default="reports/auto", help="Output folder")
     args = parser.parse_args()

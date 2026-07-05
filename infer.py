@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AIT Visual Inspector -- Inference Script
+CircuitSight -- Inference Script
 Run defect detection on images, folders, or videos.
 
 Usage:
@@ -17,10 +17,10 @@ import time
 from pathlib import Path
 
 import cv2
-import yaml
 
 from src.models.detector import CircuitSight_Detector
 from src.utils.viz import save_annotated
+from src.utils.weights import find_best_weights
 
 logger = logging.getLogger(__name__)
 
@@ -82,8 +82,8 @@ def process_video(
     tracker = None
     if track:
         try:
-            from src.tracking.tracker import AIT_Tracker
-            tracker = AIT_Tracker()
+            from src.tracking.tracker import CircuitSight_Tracker
+            tracker = CircuitSight_Tracker()
             logger.info("Tracking enabled (ByteTrack)")
         except ImportError:
             logger.warning("Tracking module not available, running detection only")
@@ -155,7 +155,7 @@ def main():
     )
 
     parser = argparse.ArgumentParser(
-        description="Run AIT defect detection inference",
+        description="Run CircuitSight defect detection inference",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--source", type=str, required=True,
@@ -171,14 +171,10 @@ def main():
     args = parser.parse_args()
 
     # -- Find weights --
-    weights_path = args.weights
+    weights_path = args.weights or find_best_weights()
     if weights_path is None:
-        candidates = list(Path("runs").rglob("best.pt"))
-        if candidates:
-            weights_path = str(sorted(candidates, key=lambda p: p.stat().st_mtime)[-1])
-        else:
-            logger.error("No weights found. Provide --weights or run training first.")
-            sys.exit(1)
+        logger.error("No weights found. Provide --weights or run training first.")
+        sys.exit(1)
 
     # -- Setup detector --
     output_dir = Path(args.output_dir)
@@ -194,7 +190,7 @@ def main():
     source = Path(args.source)
 
     logger.info("=" * 50)
-    logger.info("AIT Visual Inspector -- Inference")
+    logger.info("CircuitSight -- Inference")
     logger.info("=" * 50)
     logger.info("  Source:  %s", args.source)
     logger.info("  Weights: %s", weights_path)

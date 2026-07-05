@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AIT Visual Inspector -- Evaluation Script
+CircuitSight -- Evaluation Script
 Runs comprehensive evaluation: mAP, precision/recall, confusion matrix, latency.
 
 Usage:
@@ -8,10 +8,8 @@ Usage:
 """
 
 import argparse
-import json
 import logging
 import sys
-import time
 from pathlib import Path
 
 import cv2
@@ -23,8 +21,9 @@ import seaborn as sns
 import yaml
 
 from src.models.detector import CircuitSight_Detector
-from src.utils.metrics import benchmark_latency, save_metrics
+from src.utils.metrics import benchmark_latency, resolve_defect_class_ids, save_metrics
 from src.utils.viz import create_failure_gallery, save_annotated
+from src.utils.weights import find_best_weights
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +64,7 @@ def main():
     )
 
     parser = argparse.ArgumentParser(
-        description="Evaluate AIT Visual Inspector model",
+        description="Evaluate CircuitSight model",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--weights", type=str, default=None, help="Trained weights path")
@@ -81,16 +80,12 @@ def main():
     args = parser.parse_args()
 
     # -- Find weights --
-    weights_path = args.weights
+    weights_path = args.weights or find_best_weights()
     if weights_path is None:
-        # Auto-discover latest best weights
-        candidates = list(Path("runs").rglob("best.pt"))
-        if candidates:
-            weights_path = str(sorted(candidates, key=lambda p: p.stat().st_mtime)[-1])
-            logger.info("Auto-discovered weights: %s", weights_path)
-        else:
-            logger.error("No weights found. Provide --weights or run training first.")
-            sys.exit(1)
+        logger.error("No weights found. Provide --weights or run training first.")
+        sys.exit(1)
+    if args.weights is None:
+        logger.info("Auto-discovered weights: %s", weights_path)
 
     # -- Setup --
     output_dir = Path(args.output_dir)
@@ -109,16 +104,13 @@ def main():
     test_img_dir = dataset_root / data_cfg.get("test", "test/images")
     test_lbl_dir = dataset_root / "test" / "labels"
 
-    # Read class names from config
+    # Read class names from config. In defect-only datasets (like the 6-class
+    # PCB set) every class counts as a defect; in binary good/defect datasets
+    # only the defect class does.
     class_names = data_cfg.get("names", {0: "good", 1: "defect"})
-    defect_class_id = None
-    for cls_id, cls_name in class_names.items():
-        if cls_name == "defect":
-            defect_class_id = int(cls_id)
-            break
-    if defect_class_id is None:
-        defect_class_id = 1
-        logger.warning("Could not find 'defect' class in data config, defaulting to class_id=1")
+    if isinstance(class_names, list):
+        class_names = dict(enumerate(class_names))
+    defect_class_ids = resolve_defect_class_ids(class_names)
 
     if not test_img_dir.exists():
         logger.error("Test images not found: %s", test_img_dir)
@@ -131,7 +123,7 @@ def main():
     )
 
     logger.info("=" * 50)
-    logger.info("AIT Visual Inspector -- Evaluation")
+    logger.info("CircuitSight -- Evaluation")
     logger.info("=" * 50)
     logger.info("  Weights:     %s", weights_path)
     logger.info("  Test images: %d", len(test_images))
@@ -192,7 +184,7 @@ def main():
             with open(label_path) as f:
                 for line in f:
                     parts = line.strip().split()
-                    if parts and int(parts[0]) == defect_class_id:
+                    if parts and int(parts[0]) in defect_class_ids:
                         has_gt_defect = True
                         break
 
@@ -232,7 +224,7 @@ def main():
             with open(label_path) as f:
                 for line in f:
                     parts = line.strip().split()
-                    if parts and int(parts[0]) == defect_class_id:
+                    if parts and int(parts[0]) in defect_class_ids:
                         has_gt = True
                         break
 
