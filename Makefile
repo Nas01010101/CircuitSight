@@ -1,13 +1,13 @@
 .PHONY: setup download-pcb convert-pcb train-pcb evaluate infer app api watch export-onnx docker-build docker-run clean help
 
 # ──────────────────────────────────────────────
-# AIT Visual Inspector — Makefile
+# CircuitSight — Makefile
 # ──────────────────────────────────────────────
 
 PYTHON ?= python3
 PIP ?= pip3
 STREAMLIT ?= streamlit
-DOCKER_TAG ?= ait-visual-inspector:latest
+DOCKER_TAG ?= circuitsight:latest
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
@@ -31,14 +31,6 @@ convert-pcb: ## Convert PCB VOC annotations to YOLO format
 	$(PYTHON) -m src.data.convert_to_yolo --dataset pcb --validate
 
 prepare-pcb: download-pcb convert-pcb ## Download + convert PCB data
-
-# ── Data (MVTec — legacy) ─────────────────────
-
-download-mvtec: ## Download MVTec AD dataset
-	$(PYTHON) -m src.data.download_mvtec --config configs/data.yaml
-
-convert-mvtec: ## Convert MVTec AD masks to YOLO format
-	$(PYTHON) -m src.data.convert_to_yolo --dataset mvtec --validate
 
 # ── Training ──────────────────────────────────
 

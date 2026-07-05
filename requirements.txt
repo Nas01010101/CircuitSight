@@ -16,8 +16,10 @@ fastapi>=0.100.0
 uvicorn[standard]>=0.22.0
 python-multipart>=0.0.6
 
-# Reporting
+# Reporting & evaluation plots
 fpdf2>=2.7.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
 
 # Tracking (video bonus feature)
 supervision>=0.14.0
@@ -25,8 +27,6 @@ supervision>=0.14.0
 # Data download
 kaggle>=1.5.0
 
-# Folder watcher
-watchdog>=3.0.0
 
 # ONNX export
 onnxruntime>=1.15.0
